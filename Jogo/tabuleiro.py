@@ -68,6 +68,7 @@ class Tabuleiro():
                 self.sprites['peao'].center_y = self.tabuleiro[i+soma][1]
                 self.pecas_list.append(self.sprites['peao'])
                 self.tabuleiro[i+soma][2] = numPeca
+
         elif nome == 'dama' or nome == 'rei':
             tam = 0.055
             self.tabuleiro[soma+aux+dist][2] = numPeca
@@ -97,7 +98,7 @@ class Tabuleiro():
             aux = -8
 
         # setando nas posições
-        self.pecas(caminho, 'peao', soma, aux, 6)
+        self.pecas(caminho, 'peao', soma, aux, None, 6)
         self.pecas(caminho, 'torre', soma, aux, 0, 5)
         self.pecas(caminho, 'cavalo', soma, aux, 1, 4)
         self.pecas(caminho, 'bispo', soma, aux, 2, 3)

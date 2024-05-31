@@ -11,8 +11,5 @@ xadrez.mostrar()
 print(xadrez.tabuleiro)
 
 
-return []
-
-
 arcade.finish_render()
 arcade.run()
