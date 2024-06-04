@@ -48,30 +48,36 @@ class Tabuleiro():
             
             arcade.draw_text(f'{linha}', x-self.espaco-5, y-4, arcade.color.BLACK)
             for coluna in range(8):
-                self.tabuleiro.append([x, y, 0])
+                # tabuleiro[0] representa o eixo x
+                # tabuleiro[1] representa o eixo y
+                # tabuleiro[2] representa qual peça é
+                # tabuleiro[3] representa se é preto ou branco (1 preto e 0 branco)
+                self.tabuleiro.append([x, y, 0, -1])
                 # x, y, width, height, color
                 if coluna % 2 == aux:
-                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.AO)
+                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.COCOA_BROWN)
                 else:
-                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.YELLOW)
+                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.COFFEE)
 
                 x += self.espaco
             y -= self.espaco
             x = self.inicio_x
 
 
-    def pecas(self, caminho, nome, soma, aux, dist = None, numPeca = 0):
+    def pecas(self, caminho, nome, soma, aux, dist = None, numPeca = 0, cor = 1):
         if nome == 'peao':    
             for i in range(8):
                 self.sprites['peao'] = arcade.Sprite(f'{caminho}/peao.png', 0.06)
                 self.sprites['peao'].center_x = self.tabuleiro[i+soma][0]
                 self.sprites['peao'].center_y = self.tabuleiro[i+soma][1]
                 self.pecas_list.append(self.sprites['peao'])
-                self.tabuleiro[i+soma][2] = numPeca
+                self.tabuleiro[i+soma][2] = numPeca # setando o valor da para identificar qual é a peça
+                self.tabuleiro[i+soma][3] = cor # mostrando se aquela peça é preta ou branca
 
         elif nome == 'dama' or nome == 'rei':
             tam = 0.055
-            self.tabuleiro[soma+aux+dist][2] = numPeca
+            self.tabuleiro[soma+aux+dist][2] = numPeca # setando o valor da para identificar qual é a peça
+            self.tabuleiro[soma+aux+dist][3] = cor # mostrando se aquela peça é preta ou branca
             if nome == 'dama':
                 tam = 0.036
             self.sprites[nome] = arcade.Sprite(f'{caminho}/{nome}.png', tam)
@@ -79,47 +85,59 @@ class Tabuleiro():
             self.sprites[nome].center_y = self.tabuleiro[soma+aux+dist][1] 
             self.pecas_list.append(self.sprites[nome])
         else:
-            self.tabuleiro[soma+aux+dist][2] = numPeca
+            self.tabuleiro[soma+aux+dist][2] = numPeca # setando o valor da para identificar qual é a peça
+            self.tabuleiro[soma+aux+dist][3] = cor # mostrando se aquela peça é preta ou branca
             self.sprites[nome] = arcade.Sprite(f'{caminho}/{nome}.png', 0.06)
             self.sprites[nome].center_x = self.tabuleiro[soma+aux+dist][0]
             self.sprites[nome].center_y = self.tabuleiro[soma+aux+dist][1]
             self.pecas_list.append(self.sprites[nome])
             d = 7 - dist
             self.tabuleiro[soma+aux+d][2] = numPeca
+            self.tabuleiro[soma+aux+d][3] = cor
             self.sprites[nome] = arcade.Sprite(f'{caminho}/{nome}.png', 0.06)
             self.sprites[nome].center_x = self.tabuleiro[soma+aux+d][0]
             self.sprites[nome].center_y = self.tabuleiro[soma+aux+d][1]
             self.pecas_list.append(self.sprites[nome])
             
 
-    def posicionar_auxiliar(self, caminho, soma): 
+    def posicionar_auxiliar(self, caminho, soma, cor): 
         aux = 8
         if soma == 8:
             aux = -8
 
         # setando nas posições
-        self.pecas(caminho, 'peao', soma, aux, None, 6)
-        self.pecas(caminho, 'torre', soma, aux, 0, 5)
-        self.pecas(caminho, 'cavalo', soma, aux, 1, 4)
-        self.pecas(caminho, 'bispo', soma, aux, 2, 3)
-        self.pecas(caminho, 'dama', soma, aux, 3, 2)
-        self.pecas(caminho, 'rei', soma, aux, 4, 1)
+        """
+            * cada peça terá um peso (que é passada no 6 parametro) pra calculo posterior na conta do minimax()
+            * variavel soma serve como uma variavel auxiliar para posicionar as peças pra cima ou baixo
+        """
+        self.pecas(caminho, 'peao', soma, aux, None, 50, cor)
+        self.pecas(caminho, 'torre', soma, aux, 0, 100, cor)
+        self.pecas(caminho, 'cavalo', soma, aux, 1, 200, cor)
+        self.pecas(caminho, 'bispo', soma, aux, 2, 130, cor)
+        self.pecas(caminho, 'dama', soma, aux, 3, 500, cor)
+        self.pecas(caminho, 'rei', soma, aux, 4, 1000, cor)
         
 
     def posicionarPeca(self):
         # setar 8 ou 48
-        self.posicionar_auxiliar('pecas/branco', 48) 
-        self.posicionar_auxiliar('pecas/preto', 8)
+        self.posicionar_auxiliar('pecas/branco', 8, 0) 
+        self.posicionar_auxiliar('pecas/preto', 48, 1)
     
 
     def mostrar(self):
         self.pecas_list.draw();
+
+    def posicao(self, x, y):
+        for i in range(0, len(self.pecas_list)):
+            if self.pecas_list[i].center_x == x and self.pecas_list[i].center_y == y:
+                return i
 
 """
 xadrez = Tabuleiro()
 xadrez.cria_tabuleiro()
 xadrez.posicionarPeca()
 xadrez.mostrar()
+
 # Finish the render.
 arcade.finish_render()
 
