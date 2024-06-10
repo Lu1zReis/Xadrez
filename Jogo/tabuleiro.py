@@ -1,20 +1,21 @@
 import arcade
-
+"""
 # ---------CONSTANTES----------
 resolucao_x = 400
 resolucao_y = 400
-"""
-    CONFIGURAÇÕES
-"""
+
+
+#    CONFIGURAÇÕES
+
 # Open the window. Set the window title and dimensions (width and height)
 arcade.open_window(resolucao_x, resolucao_y, "Xadrez")
 # fundo
 arcade.set_background_color(arcade.color.MOONSTONE_BLUE)
 # arcade.start_render()
+"""
 
-class Tabuleiro():
+class Tabuleiro(arcade.Window):
     def __init__(self):
-       
         self.largQuadrado = 30
         self.compQuadrado = 30
         self.espaco = self.compQuadrado 
@@ -24,45 +25,23 @@ class Tabuleiro():
         self.inicio_y = 320
         self.sprites = {'rei': None, 'dama': None, 'bispo': None, 'cavalo': None, 'torre': None, 'peao': None}
         self.pecas_list = arcade.SpriteList()
+        self.mesa = arcade.Sprite()
+        # arcade.start_render()
 
+        self.entrada_texto = ''
 
     def cria_tabuleiro(self):
-        
+        self.mesa = arcade.Sprite('pecas/tabuleiro/mesa.png', 0.73)
         x = self.inicio_x
         y = self.inicio_y
-
-        # colocar os numeros em cima do tabuleiro (1 a 8)
-        for texto_acima in range(8):
-            arcade.draw_text(f'{self.lateral[texto_acima]}', x-4, y+25, arcade.color.BLACK)
-            x += self.espaco-1
-        x = self.inicio_x
-
-
+        self.mesa.center_x = x + 90
+        self.mesa.center_y = y - 120
         for linha in range(8):
-            # mudar as cores do quadrado
-            aux = 0
-            if linha % 2 == 0:
-                aux = 0
-            else:
-                aux = 1
-            
-            arcade.draw_text(f'{linha}', x-self.espaco-5, y-4, arcade.color.BLACK)
             for coluna in range(8):
-                # tabuleiro[0] representa o eixo x
-                # tabuleiro[1] representa o eixo y
-                # tabuleiro[2] representa qual peça é
-                # tabuleiro[3] representa se é preto ou branco (1 preto e 0 branco)
                 self.tabuleiro.append([x, y, 0, -1])
-                # x, y, width, height, color
-                if coluna % 2 == aux:
-                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.COCOA_BROWN)
-                else:
-                    arcade.draw_rectangle_filled(x, y, self.largQuadrado, self.compQuadrado, arcade.color.COFFEE)
-
                 x += self.espaco
             y -= self.espaco
             x = self.inicio_x
-
 
     def pecas(self, caminho, nome, soma, aux, dist = None, numPeca = 0, cor = 1):
         if nome == 'peao':    
@@ -123,14 +102,18 @@ class Tabuleiro():
         self.posicionar_auxiliar('pecas/branco', 8, 0) 
         self.posicionar_auxiliar('pecas/preto', 48, 1)
     
-
+    
     def mostrar(self):
+        arcade.start_render()
         self.pecas_list.draw();
+        self.mesa.draw()
+  
 
     def posicao(self, x, y):
         for i in range(0, len(self.pecas_list)):
             if self.pecas_list[i].center_x == x and self.pecas_list[i].center_y == y:
                 return i
+
 
 """
 xadrez = Tabuleiro()
