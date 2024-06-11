@@ -1,18 +1,4 @@
 import arcade
-"""
-# ---------CONSTANTES----------
-resolucao_x = 400
-resolucao_y = 400
-
-
-#    CONFIGURAÇÕES
-
-# Open the window. Set the window title and dimensions (width and height)
-arcade.open_window(resolucao_x, resolucao_y, "Xadrez")
-# fundo
-arcade.set_background_color(arcade.color.MOONSTONE_BLUE)
-# arcade.start_render()
-"""
 
 class Tabuleiro(arcade.Window):
     def __init__(self):
@@ -27,8 +13,6 @@ class Tabuleiro(arcade.Window):
         self.pecas_list = arcade.SpriteList()
         self.mesa = arcade.Sprite()
         # arcade.start_render()
-
-        self.entrada_texto = ''
 
     def cria_tabuleiro(self):
         self.mesa = arcade.Sprite('pecas/tabuleiro/mesa.png', 0.73)
@@ -109,10 +93,21 @@ class Tabuleiro(arcade.Window):
         self.mesa.draw()
   
 
-    def posicao(self, x, y):
+    def posicao_sprites(self, x, y):
         for i in range(0, len(self.pecas_list)):
-            if self.pecas_list[i].center_x == x and self.pecas_list[i].center_y == y:
-                return i
+            for j in range(-10, 10, 1):
+                for k in range(-10, 10, 1):
+                    if self.pecas_list[i].center_x == x+j and self.pecas_list[i].center_y == y+k:
+                        return [i, x+j, y+k]
+        return []
+    
+    def posicao_tabuleiro(self, x, y):
+        for v in range(len(self.tabuleiro)):
+            for j in range(-10, 10, 1):
+                for k in range(-10, 10, 1):
+                    if x+j in self.tabuleiro[v] and y+k in self.tabuleiro[v]:
+                        return self.tabuleiro[v]
+        return []
 
 
 """

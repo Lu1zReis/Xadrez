@@ -25,61 +25,50 @@ class MyGame(arcade.Window):
         self.xadrez.cria_tabuleiro()
         self.xadrez.posicionarPeca()
         self.peca_selecionada = None
-        self.entrada_texto = ''
+        self.init_peca        = None
+        self.end_peca         = None
+        self.selected_sprite = None
 
     def on_draw(self):
         arcade.start_render()
         self.xadrez.mesa.draw()
         self.xadrez.pecas_list.draw()
-        arcade.draw_text(f"Digite as coordenadas (x, y): {self.entrada_texto}", 3, 40, arcade.color.BLACK, 12)
 
-    def on_text(self, text):
-        # Evento de digitar texto
-        if text.isdigit() or text == ',':
-            self.entrada_texto += text
+    def on_mouse_press(self, x, y, button, modifiers):
+        # Evento de clique do mouse
+        sprites_hit = arcade.get_sprites_at_point((x, y), self.xadrez.pecas_list)
+        
+        self.init_peca = self.xadrez.posicao_sprites(x, y) 
+
+        if len(sprites_hit) > 0:
+            self.selected_sprite = sprites_hit[0]
+    
+    def on_mouse_release(self, x, y, button, modifiers):
+        # Evento de soltar o mouse
+        self.end_peca = self.xadrez.posicao_sprites(x, y)
+        posicao_correta = self.xadrez.posicao_tabuleiro(x, y)
+        print(self.init_peca, self.end_peca, posicao_correta, [x, y])
+        if len(self.init_peca) and len(self.end_peca) and len(posicao_correta):
+            self.xadrez.pecas_list[self.end_peca[0]].center_x = posicao_correta[0]
+            self.xadrez.pecas_list[self.end_peca[0]].center_y = posicao_correta[1]
+        else:
+            if self.selected_sprite != None:
+                posicao_correta = self.xadrez.posicao_tabuleiro(self.init_peca[1], self.init_peca[2])
+                self.xadrez.pecas_list[self.init_peca[0]].center_x = posicao_correta[0]
+                self.xadrez.pecas_list[self.init_peca[0]].center_y = posicao_correta[1]
+
+        self.selected_sprite = None
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        # Evento de movimento do mouse
+        if self.selected_sprite:
+            self.selected_sprite.center_x = x
+            self.selected_sprite.center_y = y
 
 def main ():
     jogo = MyGame()
-    print(jogo.xadrez.tabuleiro)
+    # print(jogo.xadrez.tabuleiro)
     arcade.run()
 
 if __name__ == "__main__":
     main()
-
-"""
-xadrez = tabuleiro.Tabuleiro()
-
-xadrez.cria_tabuleiro()
-xadrez.posicionarPeca()
-# print(xadrez.tabuleiro)
-
-# movimentando uma peça
-
-getPeca = 8
-destino = 16 * 2
-
-# escolhemos a peça e pegamos suas coordenadas
-mx = xadrez.tabuleiro[getPeca][0] # x da tela
-my = xadrez.tabuleiro[getPeca][1] # y da tela
-
-# achamos a poisicao correspondente no array dos sprites (já que lá não esta ordenado) 
-p  = xadrez.posicao(mx, my)
-sprite = xadrez.pecas_list[p] 
-
-# pegamos a coordenada aonde queremos ir
-dx = xadrez.tabuleiro[destino][0]
-dy = xadrez.tabuleiro[destino][1]
-
-# mudamos a posicao do sprite que escolhemos
-sprite.center_x = dx
-sprite.center_y = dy
-
-# colocamos ele na posicao da lista novamente
-xadrez.pecas_list[p] = sprite
-
-xadrez.mostrar()
-
-# arcade.gui.UIInputText()
-# dama = damas.Dama(12, xadrez.tabuleiro)
-# print(dama.possibilidades())
-"""
